@@ -75,3 +75,8 @@ The script stores forecasted results in a list and handles categories that canno
 ## Author
 Created by Shreeya Salunkhe
 For internal forecasting and data science project demonstration.
+
+## 📽️ Video Demo
+
+🎬 [Watch the demo video on Google Drive](https://drive.google.com/file/d/1su1N8VBBV1NralPhPq0xm0xHmR6ET6RW/view?usp=sharing)
+
