@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sales Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f3f6f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #3e8e7e;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 1.5em;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1100px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    select {
+      padding: 10px;
+      margin-bottom: 30px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    canvas {
+      margin-bottom: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>📊 Monthly Sales Dashboard (Units Sold)</header>
+
+  <div class="container">
+    <label for="categorySelect">🔽 Filter by Category:</label>
+    <select id="categorySelect">
+      <option value="All">All Categories</option>
+      <option value="Toys">Toys</option>
+      <option value="Electronics">Electronics</option>
+      <option value="Clothing">Clothing</option>
+      <option value="Groceries">Groceries</option>
+      <option value="Furniture">Furniture</option>
+    </select>
+
+    <canvas id="lineChart"></canvas>
+    <canvas id="barChart"></canvas>
+  </div>
+
+  <script>
+    const labels = [
+      '2022-08', '2022-09', '2022-10', '2022-11', '2022-12',
+      '2023-08', '2023-09', '2023-10', '2023-11', '2023-12',
+      '2024-01'
+    ];
+
+    const allData = {
+      'Toys': [90264, 78204, 82295, 84679, 82941, 82010, 83889, 81608, 82510, 82523, 3240],
+      'Electronics': [86608, 81427, 88306, 79072, 81573, 85787, 78590, 88692, 80414, 89754, 3334],
+      'Clothing': [81421, 83628, 79739, 87227, 85753, 88506, 83238, 76865, 86666, 78919, 1390],
+      'Groceries': [81708, 87719, 86275, 82288, 73314, 75375, 80254, 88350, 75332, 79569, 2227],
+      'Furniture': [84915, 80632, 90248, 81269, 88740, 84823, 79390, 90131, 91204, 87907, 3053]
+    };
+
+    const colors = {
+      'Toys': '#ff6384',
+      'Electronics': '#36a2eb',
+      'Clothing': '#4bc0c0',
+      'Groceries': '#9966ff',
+      'Furniture': '#ff9f40'
+    };
+
+    const ctxLine = document.getElementById('lineChart').getContext('2d');
+    const ctxBar = document.getElementById('barChart').getContext('2d');
+
+    let lineChart, barChart;
+
+    function renderCharts(category) {
+      const datasets = category === 'All'
+        ? Object.keys(allData).map(cat => ({
+            label: cat,
+            data: allData[cat],
+            borderColor: colors[cat],
+            backgroundColor: colors[cat],
+            fill: false,
+            tension: 0.4
+          }))
+        : [{
+            label: category,
+            data: allData[category],
+            borderColor: colors[category],
+            backgroundColor: colors[category],
+            fill: false,
+            tension: 0.4
+          }];
+
+      const barsets = datasets.map(ds => ({
+        ...ds,
+        type: 'bar',
+        borderWidth: 1
+      }));
+
+      if (lineChart) lineChart.destroy();
+      if (barChart) barChart.destroy();
+
+      lineChart = new Chart(ctxLine, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: datasets
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Line Chart: Monthly Units Sold',
+              font: { size: 18 }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: 'Units Sold' }
+            },
+            x: {
+              title: { display: true, text: 'Month-Year' }
+            }
+          }
+        }
+      });
+
+      barChart = new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: barsets
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Bar Chart: Monthly Units Sold',
+              font: { size: 18 }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: 'Units Sold' }
+            },
+            x: {
+              title: { display: true, text: 'Month-Year' }
+            }
+          }
+        }
+      });
+    }
+
+    document.getElementById('categorySelect').addEventListener('change', (e) => {
+      renderCharts(e.target.value);
+    });
+
+    // Initial render
+    renderCharts('All');
+  </script>
+<script>
+  const currentStore = localStorage.getItem("selectedStore") || "reliance";
+
+  if (currentStore !== "reliance") {
+    document.body.innerHTML = `
+      <div style="text-align:center; padding:60px;">
+        <h2 style="color:#3e8e7e;">📢 No Charts Available</h2>
+        <p>There is no sales or prediction data available for <strong>${currentStore.replace(/^\w/, c => c.toUpperCase())}</strong>.</p>
+        <br/>
+        <a href="main.html" style="background:#3e8e7e;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;">⬅️ Go Back to Dashboard</a>
+      </div>
+    `;
+  }
+</script>
+
+</body>
+</html>

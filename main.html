@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Main Page | Sales Predictor</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    nav {
+      background-color: #3e8e7e;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      color: white;
+      position: relative;
+    }
+
+    nav .logo {
+      font-size: 1.5em;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+    }
+
+    .menu-btn {
+      font-size: 24px;
+      margin-right: 15px;
+      cursor: pointer;
+      display: inline-block;
+    }
+
+    nav .links a {
+      color: white;
+      text-decoration: none;
+      margin: 0 15px;
+      font-size: 1em;
+    }
+
+    nav .profile {
+      font-weight: bold;
+    }
+
+    .content {
+      padding: 40px;
+      text-align: center;
+    }
+
+    .store-select {
+      margin-top: 20px;
+    }
+
+    .store-select select {
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+    }
+
+    .downloads {
+      margin-top: 20px;
+    }
+
+    .downloads a {
+      display: inline-block;
+      background: #3e8e7e;
+      color: #fff;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      margin: 10px;
+      font-size: 14px;
+    }
+
+    .downloads a:hover {
+      background: #2c5c52;
+    }
+
+    .dashboard-info {
+      margin-top: 30px;
+      font-size: 18px;
+      color: #444;
+    }
+
+    .sidebar {
+      height: 100%;
+      width: 250px;
+      position: fixed;
+      top: 0;
+      left: -250px;
+      background-color: #2e6f63;
+      padding-top: 60px;
+      transition: 0.3s;
+      z-index: 999;
+    }
+
+    .sidebar a {
+      padding: 15px 30px;
+      text-decoration: none;
+      font-size: 18px;
+      color: #fff;
+      display: block;
+      transition: 0.2s;
+    }
+
+    .sidebar a:hover {
+      background-color: #49a38b;
+    }
+
+    .overlay {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background: rgba(0,0,0,0.3);
+      display: none;
+      z-index: 998;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div id="sidebar" class="sidebar">
+    <a href="store_report.html">📊 View Store Report</a>
+    <a href="predicted.html">📈 View Predicted Analysis</a>
+    <a href="profile.php">👤 Profile</a>
+    <a href="#" onclick="downloadCharts()">📥 Download Report</a>
+    <a href="login.html">🚪 Logout</a>
+  </div>
+  <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="logo">
+      <span class="menu-btn" onclick="toggleSidebar()">☰</span> Sales Predictor
+    </div>
+    <div class="links">
+      <a href="#">Home</a>
+      <a href="about.html">About Us</a>
+      <a href="contact.html">Contact Us</a>
+    </div>
+    <div class="profile">Hi, <span id="profileName">User</span></div>
+  </nav>
+
+  <!-- Content -->
+  <div class="content">
+    <h1>Welcome to your Dashboard</h1>
+    <p>Select a store to view its data:</p>
+
+    <!-- Store Selection -->
+    <div class="store-select">
+      <select id="storeSelect" onchange="handleStoreChange()">
+        <option value="reliance">Reliance Super Mart</option>
+        <option value="dmart">D-Mart</option>
+        <option value="bigbazaar">Big Bazaar</option>
+        <option value="spencer">Spencer's</option>
+      </select>
+    </div>
+
+    <div class="dashboard-info" id="dashboardInfo">
+      Showing data for: <strong>Reliance Super Mart</strong>
+    </div>
+
+    <div class="downloads" id="downloads">
+      <a href="retail_store_inventory.csv" download>⬇️ Download Sales Data</a>
+      <a href="category_sales_forecast.xlsx" download>📈 Download Forecast Data</a>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      const overlay = document.getElementById("overlay");
+      if (sidebar.style.left === "0px") {
+        sidebar.style.left = "-250px";
+        overlay.style.display = "none";
+      } else {
+        sidebar.style.left = "0px";
+        overlay.style.display = "block";
+      }
+    }
+
+    // ✅ Display user name from localStorage
+   const user = localStorage.getItem("salesUser");
+if (user) {
+  try {
+    const parsedUser = JSON.parse(user);
+    document.getElementById("profileName").textContent = parsedUser.username || "User";
+  } catch (e) {
+    document.getElementById("profileName").textContent = "User";
+  }
+}
+
+
+    // Store selection behavior
+    function handleStoreChange() {
+      const store = document.getElementById("storeSelect").value;
+      localStorage.setItem("selectedStore", store);
+
+      const info = document.getElementById("dashboardInfo");
+      const downloads = document.getElementById("downloads");
+
+      switch (store) {
+        case "reliance":
+          info.innerHTML = "Showing data for: <strong>Reliance Super Mart</strong>";
+          downloads.style.display = "block";
+          break;
+        default:
+          info.innerHTML = "No data available for: <strong>" + store.replace(/^\w/, c => c.toUpperCase()) + "</strong>";
+          downloads.style.display = "none";
+          break;
+      }
+    }
+
+    // Download chart images
+    function downloadCharts() {
+      const line = window.opener?.document.getElementById('lineChart') || document.getElementById('lineChart');
+      const bar = window.opener?.document.getElementById('barChart') || document.getElementById('barChart');
+
+      if (!line || !bar) {
+        alert("⚠️ Charts not found on this page. Please open the Store Report or Predicted Report page.");
+        return;
+      }
+
+      const lineLink = document.createElement('a');
+      lineLink.href = line.toDataURL('image/png');
+      lineLink.download = 'Actual_Sales_LineChart.png';
+      lineLink.click();
+
+      const barLink = document.createElement('a');
+      barLink.href = bar.toDataURL('image/png');
+      barLink.download = 'Actual_Sales_BarChart.png';
+      barLink.click();
+    }
+  </script>
+
+</body>
+</html>

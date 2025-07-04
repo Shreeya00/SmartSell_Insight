@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Store Report | Sales Predictor</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f5f7fa;
+      color: #333;
+    }
+
+    header {
+      background-color: #3e8e7e;
+      padding: 20px 40px;
+      color: white;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #3e8e7e;
+      margin-bottom: 30px;
+    }
+
+    iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    #fallbackChart {
+      display: none;
+      margin-top: 40px;
+    }
+
+    button {
+      display: block;
+      margin: 20px auto;
+      padding: 12px 25px;
+      background-color: #3e8e7e;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #327366;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 14px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>📊 Store Sales Dashboard</h1>
+    <p>Interactive Power BI Report Embedded Below</p>
+  </header>
+
+  <div class="container">
+    <h2>Sales Forecast & Store Analytics</h2>
+
+    <iframe title="Sales"
+      src="https://app.powerbi.com/reportEmbed?reportId=498851f7-c433-43af-b17b-e686506ea28d&autoAuth=true&ctid=03cb5f0c-1f82-4993-9621-36330f6309ec"
+      allowFullScreen="true">
+    </iframe>
+
+    <button onclick="toggleChart()">⚡ Can't see the Power BI chart? Click to view here</button>
+
+    <div id="fallbackChart">
+      <canvas id="salesChart"></canvas>
+    </div>
+  </div>
+
+  <footer>
+    © 2025 Sales Predictor | Powered by Power BI & Chart.js
+  </footer>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    const labels = [
+      "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07"
+    ];
+
+    const chartData = {
+      labels: labels,
+      datasets: [
+        {
+          label: "Clothing",
+          data: [-28352.3, -18042.5, -21616.3, -20377.4, -20806.9, -20658],
+          borderColor: "#b71c1c",
+          fill: false
+        },
+        {
+          label: "Electronics",
+          data: [28114.15, 14017.65, 15602.62, 17497.38, 20069.91, 18593.72],
+          borderColor: "#1565c0",
+          fill: false
+        },
+        {
+          label: "Furniture",
+          data: [15910.72, 8033.41, 12859.46, 9902.77, 11714.19, 10604.42],
+          borderColor: "#6a1b9a",
+          fill: false
+        },
+        {
+          label: "Groceries",
+          data: [20416.47, 6703.42, 17041.69, 9247.66, 15123.59, 10693.73],
+          borderColor: "#2e7d32",
+          fill: false
+        },
+        {
+          label: "Toys",
+          data: [11189.9, 8567.91, 9432.68, 9147.46, 9241.53, 9210.51],
+          borderColor: "#f57f17",
+          fill: false
+        }
+      ]
+    };
+
+    function toggleChart() {
+      const fallback = document.getElementById("fallbackChart");
+      if (fallback.style.display === "none") {
+        fallback.style.display = "block";
+        renderChart();
+      } else {
+        fallback.style.display = "none";
+      }
+    }
+
+    function renderChart() {
+      const ctx = document.getElementById("salesChart").getContext("2d");
+      new Chart(ctx, {
+        type: 'line',
+        data: chartData,
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Fallback: Predicted Sales Forecast by Category'
+            }
+          },
+          scales: {
+            y: {
+              title: {
+                display: true,
+                text: 'Predicted Sales'
+              }
+            },
+            x: {
+              title: {
+                display: true,
+                text: 'Month'
+              }
+            }
+          }
+        }
+      });
+    }
+  </script>
+<script>
+  const currentStore = localStorage.getItem("selectedStore") || "reliance";
+
+  if (currentStore !== "reliance") {
+    document.body.innerHTML = `
+      <div style="text-align:center; padding:60px;">
+        <h2 style="color:#3e8e7e;">📢 No Charts Available</h2>
+        <p>There is no sales or prediction data available for <strong>${currentStore.replace(/^\w/, c => c.toUpperCase())}</strong>.</p>
+        <br/>
+        <a href="main.html" style="background:#3e8e7e;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;">⬅️ Go Back to Dashboard</a>
+      </div>
+    `;
+  }
+</script>
+
+</body>
+</html>
+
